@@ -20,11 +20,21 @@ router.post(
   validator(wordId, 'params'),
   validator(userWord, 'body'),
   async (req, res) => {
-    const word = await userWordService.save(
-      req.params.wordId,
-      req.userId,
-      req.body
-    );
+    let word;
+    try {
+      await userWordService.get(req.params.wordId, req.userId);
+      word = await userWordService.update(
+        req.params.wordId,
+        req.userId,
+        req.body
+      );
+    } catch (e) {
+      word = await userWordService.save(
+        req.params.wordId,
+        req.userId,
+        req.body
+      );
+    }
     res.status(OK).send(word.toResponse());
   }
 );
