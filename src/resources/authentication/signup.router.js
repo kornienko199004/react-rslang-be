@@ -20,16 +20,13 @@ const upload = multer({ storage });
 
 router.route('/').post(upload.single('image'), async (req, res) => {
   const { name, email, password } = req.body;
+  // eslint-disable-next-line no-sync
+  const imgData = fs.readFileSync(path.join(__dirname, req.file.filename));
   const user = {
     name,
     email,
     password,
-    photo: {
-      data: req.file // eslint-disable-next-line no-sync
-        ? fs.readFileSync(path.join(__dirname, req.file.filename))
-        : null,
-      contentType: 'image/png'
-    }
+    photo: `data:image/png;base64,${imgData.toString('base64')}`
   };
 
   await userService.save(user);
